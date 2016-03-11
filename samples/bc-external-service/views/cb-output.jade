@@ -1,0 +1,13 @@
+html
+  head
+    title!= "OAuth security context info"
+    script.
+      (function () {
+        window.sessionStorage.BCAccessToken = "#{accessToken}"
+        window.sessionStorage.SiteUrls = "#{secureUrls}"
+        window.location = "#{appIndexPage}";
+      })();
+  body
+    p!= accessToken
+    p!= expiresIn
+    p!= secureUrls

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+ * Copyright (c) 2012-2015 Adobe Systems Incorporated. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -77,10 +77,16 @@
                     );
                 }
 
-                if (data.resourceName && data.existingResourceId && data.subresourceName) {
+                if (data.resourceName && data.existingResourceId && data.subresourceName && !data.isOneToManyRelation) {
                     self.$scope.requestTypes.push(
                         {method: 'POST', label: 'POST'},
                         {method: 'DELETE', label: 'DELETE'}
+                    );
+                }
+
+                if (data.resourceName && data.existingResourceId && data.subresourceName && data.isOneToManyRelation) {
+                    self.$scope.requestTypes.push(
+                        {method: 'POST', label: 'POST'}
                     );
                 }
 
@@ -346,7 +352,7 @@
 
                         //for delete the data fields are sent as query params.
                         if (self.$scope.selectedRequestType.method == "DELETE") {
-                            templateUrl += "?items=" + JSON.stringify(self.templatePrepopulatedData.items);
+                            templateUrl += "?items=" + JSON.stringify(self.templatePrepopulatedData.items).replace(/\"/g , "'");
                             templateData = {
                                 url: '"' + templateUrl + '"',
                                 methodType: '"' + self.$scope.selectedRequestType.method + '"'
@@ -354,7 +360,7 @@
                         } else {
                             templateData = {
                                 url: '"' + templateUrl + '"',
-                                dataFields: "data:" + JSON.stringify(self.templatePrepopulatedData),
+                                dataFields: "data:" + " JSON.stringify(" + JSON.stringify(self.templatePrepopulatedData) + ")",
                                 methodType: '"' + self.$scope.selectedRequestType.method + '"'
                             }
                         }

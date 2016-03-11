@@ -1,6 +1,6 @@
 /* 
  *
- * Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+ * Copyright (c) 2012-2015 Adobe Systems Incorporated. All rights reserved.
 
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -93,6 +93,7 @@
                 return self.$scope.sampleResourcesSelection.value;
             },
             function () {
+                self._displayResourceFields();
                 self._displaySubresources();
             });
 
@@ -231,7 +232,8 @@
             var subresources = self._getSubresources(resourceId, versionId, data);
 
             for (var subresourceName in subresources) {
-                self.$scope.subresources.push({"id": subresourceName, "name": subresourceName});
+                self.$scope.subresources.push({"id": subresourceName, "name": subresourceName,
+                                               "isOneToManyRelation": subresources[subresourceName].isOneToMany});
             }
         });
 
@@ -380,12 +382,23 @@
             existingResourceId = this.$scope.sampleResourcesSelection.value;
 
         var selectedFields = this._getSelectedFields(),
-            existingWhere = this._generatorsService.data ? this._generatorsService.data.where : undefined;
+            existingWhere = this._generatorsService.data ? this._generatorsService.data.where : undefined,
+            isOneToManyRelation;
 
+        if(this.$scope.subresources && subresourceId) {
+            for(var i = 0; i < this.$scope.subresources.length; i++) {
+                if(this.$scope.subresources[i].name == subresourceId) {
+                    isOneToManyRelation = this.$scope.subresources[i].isOneToManyRelation;
+                    break;
+                }    
+            }
+        }
+             
         this._generatorsService.data = {
             "resourceName": resourceId,
             "version": versionId,
             "subresourceName": subresourceId,
+            "isOneToManyRelation": isOneToManyRelation,
             "sampleResources": sampleResources,
             "existingResourceId": existingResourceId,
             "fields": selectedFields,
